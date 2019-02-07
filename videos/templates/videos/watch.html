@@ -1,0 +1,404 @@
+{% extends "videos/base.html" %}
+
+{% load static %}
+{% load bootstrap4 %}
+{% load thumbnail %}
+{% load videos_extras %}
+{% load custom_extras %}
+
+{% block page_title %}{{ media.title }}{% endblock %}
+
+{% block og_meta %}
+  <meta property="og:type" content="video.other">
+  <meta property="og:title" content="{{ media.title }}">
+  <meta property="og:image" content="{{ media.thumbnail.url }}">
+  <meta property="og:image:width" content="{{ media.thumbnail.width }}">
+  <meta property="og:image:height" content="{{ media.thumbnail.height }}">
+  <meta property="og:description" content="{% if media.description %}{{ media.description|spacelesstext }}{% else %}Watch {{ media.title }}{% endif %}">
+{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.3.21/plyr.css">
+
+  <style>
+    video#player
+    {
+      height: 460px;
+      max-height: 80vh;
+    }
+
+    .plyr:-webkit-full-screen video#player
+    {
+      height: 100%;
+      max-height: 100%;
+    }
+
+    .plyr--video
+    {
+      margin-bottom: 16px;
+    }
+
+    h1
+    {
+      font-size: 1.5rem;
+    }
+
+    h2
+    {
+      font-size: 1.3rem;
+    }
+
+    .uploader a
+    {
+      text-decoration: none;
+    }
+
+    .uploader img
+    {
+      border-radius: 50%;
+    }
+
+    #media-actions .fas
+    {
+      color: #000000;
+      text-decoration: none;
+    }
+
+    .media-item .description {
+      max-height: 8rem;
+      overflow-y: visible;
+      display: inline-block;
+      width: 100%;
+      transition: 0.25s ease;
+    }
+
+    .media-item .description.collapsed {
+      overflow-y: hidden;
+    }
+
+    .media-item .read-more {
+      display: none;
+    }
+
+    .media-item .description + .read-more.use {
+      display: block;
+    }
+
+    .media-item .read-more.use label {
+      cursor: pointer;
+    }
+
+    .media-item .description.collapsed + .read-more.use label::before
+    {
+      content: "Show More";
+    }
+
+    .media-item .description + .read-more.use label::before {
+      content: "Show Less";
+    }
+
+    #react-info .fas:before {
+      margin-right: 2px;
+    }
+
+    #react-info a {
+      text-decoration: none;
+    }
+    </style>
+{% endblock %}
+
+{% block content %}
+      <div class="row">
+        <section class="col-md-9 mb-4 media-item">
+          <h1 class="title">{{ media.title }}</h1>
+          {#<i class="fas fa-trash"></i>#}
+          {% if media.is_public %}
+            <video id="player" poster="{{ media.thumbnail.url }}">
+              <source src="{{ media.media_file.url }}" type="video/mp4">
+              {#<source src="{% get_media_prefix %}puyDDle.mp4" type="video/mp4">#}
+            </video>
+          {% else %}
+            <h2>Media is still processing. Please try again later.</h2>
+          {% endif %}
+
+          
+          <div class="row mb-2">
+            {% thumbnail media.uploader.profile_image "48x48" as im %}
+            <div class="uploader col-md-4">
+              <a href="{{ media.uploader.get_absolute_url }}" title="{{ media.uploader.username }}" class="mr-2">
+                <img src="{{ im.url }}" alt="Channel icon">
+              </a>
+              <a href="{{ media.uploader.get_absolute_url }}" title="{{ media.uploader.username }} channel">
+                {{ media.uploader.username }}
+              </a></div>
+            {% endthumbnail %}
+            <div class="offset-md-4 col-md-4">
+              <button class="btn subscribe{% if is_subbed %} active btn-secondary{% else %} btn-primary{% endif %}" data-channel-id="{{ media.uploader.id }}" data-toggle-sub="{% url 'videos:togglesub' media.uploader.id %}" data-num-subs="{{ media.uploader.sub_count  }}">Subscribe{{ is_subbed|yesno:"d," }} ({{ media.uploader.sub_count }})</button>
+            </div>
+          </div>
+          <hr class="mb-1 mt-1">
+          <div class="row">
+         
+            <div class="media-info col-md-8">
+              <div class="">Date: <time pubdate datetime="{{ media.publish_date|date:'c' }}" title="{{ media.publish_date|date:'N j, Y, P O' }}">{{ media.publish_date|date:"DATE_FORMAT" }}</time></div>
+              {#<div class="">Views: {{ media.public_view_count }}</div>#}
+              <div class="category d-inline-block mb-2"><a href="{% url 'videos:category' media.category.slug %}" title="Category {{ media.category.title }}">{{ media.category.title }}</a></div> | <div class="rating d-inline-block mb-2">{{ media.get_rating_display }}</div>
+              {% with media.sorted_tags as media_tags %}
+                {% if media_tags %}
+                  <div class="tags">
+                      Tags: 
+                      {% for tag in media_tags %}{% if not forloop.first %}, {% endif %}<a href="{% url 'videos:tagged' tag.slug %}">#{{ tag.name|capfirst }}</a>{% endfor %}
+                  </div>
+                {% endif %}
+              {% endwith %}
+            </div>
+
+           <div class="col-md-4 mb-2">
+             <div id="view-counter">
+               <h5>{{ media.public_view_count }} View{{ media.public_view_count|pluralize }}</h5>
+             </div>
+
+             <div id="react-info" class="mb-3">
+               <a class="fas fa-thumbs-up like{% if current_react and current_react.reaction == current_react.LIKE %} text-primary active{% else %} text-body{% endif %}" data-react-type="like" data-react-value="0">{{ likes }}</a>
+               <div class="progress d-inline-flex align-middle ml-1 mr-1" style="width: 100px; height: 1px;">
+                <div class="progress-bar" role="progressbar" style="width: {{ like_percent }}%;" aria-valuenow="{{ like_percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+               </div>
+               <a class="fas fa-thumbs-down dislike{% if current_react and current_react.reaction == current_react.DISLIKE %} text-primary active{% else %} text-body{% endif %}" data-react-type="dislike" data-react-value="1">{{ dislikes }}</a>
+             </div>
+
+             <div id="media-actions">
+               <a class="fas fa-download mr-2" href="{{ media.media_file.url }}" download="{{ media.title }}{{ media.media_file_ext }}" style="color: #000000; font-size: 1.5rem;" title="Download"></a>
+               <a class="fas fa-reply mr-2" href="" style="font-size: 1.5rem;"></a>
+              {% if user.is_superuser %}
+              <div class="mb-3 mt-2">
+                <a href="{{ media.get_admin_url }}" class="btn btn-primary">
+                  Edit in Admin
+                </a>
+              </div>
+            {% endif %}
+             </div>
+            </div>
+          </div>
+
+          {% if media.description %}
+            <div class="description mt-3">
+              {#{{ media.description|linebreaks|safe }}#}
+              {{ media.output_description|linebreaks|safe }}
+            </div>
+            <div class="read-more mt-3"><label class="font-weight-bold"></label></div>
+          {% endif %}
+          
+        </section>
+
+        {#{% get_related_videos media as related_media %}#}
+        {% comment %}{% if list %}
+          {% get_playlist_videos media list as related_media %}
+        {% else %}
+          {% get_related_videos media as related_media %}
+        {% endif %}{% endcomment %}
+        {% if not related_media %}
+          {% get_related_videos media as related_media %}
+        {% endif %}
+        <section class="col-md-3">
+          {% if next_video %}
+            <section id="play-next" class="mb-5">
+              <div>
+                <h2>Play Next</h2>
+                {{ autoplay_form.autoplay.label_tag }}
+                {{ autoplay_form.autoplay }}
+                <div class="related-item mb-3">
+                  <div class="item-header" style="position: relative;">
+                    {% thumbnail next_video.thumbnail "350x200" as im %}
+                    <a href="{{ next_video.get_absolute_url }}{% if list %}?list={{ list }}{% endif %}" title="{{ next_video.title }}">
+                      <img src="{{ im.url }}" alt="{{ next_video.title }}" class="d-block mb-2" style="width: 100%">
+                    </a>
+                    <div style="position: absolute; bottom: 4px; right: 8px; background-color: rgba(0, 0, 0, 0.75); color: #FFFFFF;" class="pl-1 pr-1">{{ next_video.media_format_duration }}</div>
+                    {% endthumbnail %}
+                  </div>
+
+                  <div class="item-title"><a href="{{ next_video.get_absolute_url }}{% if list %}?list={{ list }}{% endif %}" title="{{ next_video.title }}">{{ next_video.title }}</a></div>
+                  <div class="channel-name">{{ next_video.uploader.username }}</div>
+                  <div class="media-extra">
+                    <span class="view-count">{{ next_video.view_count }} View{{ next_video.view_count|pluralize }}</span>
+                  </div>
+
+                </div>
+              </div>
+            </section>
+          {% endif %}
+          
+          {% if related_media %}
+            <h2>Related</h2>
+            <div>
+              {% for current in related_media %}
+                <div class="related-item mb-3">
+                  <div class="item-header" style="position: relative;">
+                    {% thumbnail current.thumbnail "350x200" as im %}
+                    <a href="{{ current.get_absolute_url }}{% if list %}?list={{ list }}{% endif %}" title="{{ current.title }}">
+                      <img src="{{ im.url }}" alt="{{ current.title }}" class="d-block mb-2" style="width: 100%">
+                    </a>
+                    <div style="position: absolute; bottom: 4px; right: 8px; background-color: rgba(0, 0, 0, 0.75); color: #FFFFFF;" class="pl-1 pr-1">{{ current.media_format_duration }}</div>
+                    {% endthumbnail %}
+                  </div>
+
+                  <div class="item-title"><a href="{{ current.get_absolute_url }}{% if list %}?list={{ list }}{% endif %}" title="{{ current.title }}">{{ current.title }}</a></div>
+                  <div class="channel-name">{{ current.uploader.username }}</div>
+                  <div class="media-extra">
+                    <span class="view-count">{{ current.view_count }} View{{ current.view_count|pluralize }}</span>
+                  </div>
+
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </section>
+      </div>
+{% endblock content %}
+
+{% block extra_js %}
+    <script src="https://cdn.plyr.io/3.3.21/plyr.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+
+    <script type="text/javascript">
+     var player = null;
+     (function() {
+       var config = {
+        keyboard: {
+          global: true,
+        },
+        tooltips: {
+          controls: true
+        },
+        captions: {
+          active: true,
+        },
+        autoplay: "auto",
+       };
+
+       player = new Plyr("#player", config);
+       //player.play();
+       {% if next_video %}
+         player.on("ended", function() {
+           if ($("input#id_autoplay").is(":checked"))
+           {
+             window.location.href = "{{ next_video.get_absolute_url }}{% if list %}?list={{ list }}{% endif %}";
+           }
+         });
+       {% endif %}
+       {% if start_time %}
+         player.on("ready", function() {
+           
+           player.play();
+           setTimeout(function() {
+             player.currentTime = {{ start_time }};
+           }, 500);
+         });
+         //player.currentTime = {{ start_time }};
+         //player.play();
+         //player.forward(20);
+       {% endif %}
+
+       var element = $(".media-item .description");
+       var baseEl = element.get(0);
+       var overflow = null;
+       if (baseEl != undefined)
+         overflow = baseEl.scrollHeight > baseEl.clientHeight;
+
+       if (overflow)
+       {
+         element.toggleClass("collapsed");
+         $(".read-more").toggleClass("use");
+       }
+     })();
+
+     $(".read-more label").click(function(e) {
+       var block = $(".media-item .description");
+       block.toggleClass("collapsed");
+     });
+
+     $("input#id_autoplay").click(function(e) {
+       if (this.checked)
+       {
+         Cookies.set("autoplay", "true");
+       }
+       else
+       {
+         Cookies.remove("autoplay");
+       }
+     });
+
+     {% if request.user.is_authenticated %}
+       $("#react-info a").css("cursor", "pointer");
+       $("#react-info a").click(function(e) {
+         e.preventDefault();
+         var active = $(this).hasClass("active");
+         console.log(active);
+         post_data = {
+           "user": "{{ request.user.id }}",
+           "csrfmiddlewaretoken": "{{ csrf_token }}",
+         };
+
+         var oldReact = null;
+         if (active)
+         {
+           oldReact = this;
+           post_data["react"] = -1
+         }
+         else
+         {
+           oldReact = $("#react-info a.active").get(0);
+           post_data["react"] = $(this).attr("data-react-value");
+         }
+
+         var current_el = this;
+         $("#react-info a").css("pointer-events", "none");
+         $.post("{% url 'videos:changereaction' media.id %}", post_data, function(data) {
+           var temp = 0;
+           if (oldReact)
+           {
+             temp = parseInt($(oldReact).text());
+             $(oldReact).text(temp - 1);
+             $(oldReact).toggleClass("text-primary")
+               .toggleClass("text-body").toggleClass("active");
+           }
+
+           if (oldReact == undefined || (oldReact != current_el))
+           {
+             temp = parseInt($(current_el).text());
+             $(current_el).text(temp + 1);
+             $(current_el).toggleClass("text-primary")
+               .toggleClass("text-body").toggleClass("active");
+           }
+
+           $(".progress .progress-bar").width(data["like_percent"] + "%");
+           $(".progress .progress-bar").attr("aria-valuenow", data["like_percent"]);
+           $("#react-info a").css("pointer-events", "");
+         });
+       });
+
+      $(".subscribe").click(function(e) {
+        e.preventDefault();
+        var toggle_url = $(this).attr("data-toggle-sub");
+        var sub_el = this;
+        var active = $(this).hasClass("active");
+        post_data = {
+          "csrfmiddlewaretoken": "{{ csrf_token }}",
+        };
+
+        $.post(toggle_url, post_data, function(data) {
+          var temp = parseInt($(sub_el).attr("data-num-subs"));
+          temp = active == true ? temp - 1 : temp + 1;
+          $(sub_el).text("Subscribe (" + temp + ")");
+          $(sub_el).toggleClass("active").toggleClass("btn-primary")
+            .toggleClass("btn-secondary");
+        });
+      });
+     {% endif %}
+
+     $(".description a[data-seektime]").click(function(e) {
+       e.preventDefault();
+       player.currentTime = parseInt($(this).attr("data-seektime"));
+     });
+     </script>
+{% endblock extra_js %}
+

@@ -1,0 +1,105 @@
+{% extends "videos/base.html" %}
+
+{% load static %}
+{% load bootstrap4 %}
+{% load thumbnail %}
+{% load humanize %}
+
+{% block page_title %}Search{% endblock %}
+
+{% block content %}
+  <div>
+    <h3>Search</h3>
+  </div>
+
+  <section id="search-results">
+    <form method="get" action=".">
+      <fieldset>
+        {# {{ form.as_p }} #}
+        {% bootstrap_form form %}
+        {% buttons %}
+          <button type="submit" class="btn btn-primary">Search</button>
+        {% endbuttons %}
+      </fieldset>
+    </form>
+
+    {% if query %}
+      <h3>Results</h3>
+
+      <div class="row">
+      {% for result in object_list %}
+        {% with media=result.object %}
+          <div class="col-md-4 mb-3 media-item">
+            {% thumbnail media.thumbnail "350x200" as im %}
+              <div class="item-header" style="position: relative;">
+                <a href="{{ media.get_absolute_url }}">
+                  <img src="{{ im.url }}" alt="{{ media.title }}" width=350 height=200 class="d-block mb-2">
+                </a>
+                <div style="position: absolute; bottom: 4px; right: 8px; background-color: rgba(0, 0, 0, 0.75); color: #FFFFFF;" class="pl-1 pr-1">{{ media.media_format_duration }}</div>
+              </div>
+            {% endthumbnail %}
+            <div class="title"><a href="{{ media.get_absolute_url }}" class="title-link">{{ media.title }}</a></div>
+            <div class="channel-name">{{ media.uploader.username }}</div>
+            <div class="media-extra">
+              <span class="view-count">{{ media.view_count }} View{{ media.view_count|pluralize }}</span> • <span class="media-date"><time pubdate datetime="{{ media.publish_date|date:'c' }}" title="{{ media.publish_date|date:'N j, Y, P O' }}">{{ media.publish_date|naturaltime }}</time></span>
+            </div>
+            {% if user.is_staff %}
+              <div class="media-admin-info">
+                <a href="{{ media.category.get_absolute_url }}" title="{{ media.category.title }}">{{ media.category.title }}</a> | {{ media.get_rating_display }}
+              </div>
+            {% endif %}
+          </div>
+        {% endwith %}
+
+
+    
+
+        {% comment %}
+          <p>
+            <a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a>
+          </p>
+        {% endcomment %}
+      {% empty %}
+        <p>No results found.</p>
+      {% endfor %}
+      </div>
+
+      {% comment %}
+      {% if page.has_previous or page.has_next %}
+        <div>
+          {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if page.has_previous %}</a>{% endif %}
+          |
+          {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
+        </div>
+      {% endif %}
+      {% endcomment %}
+
+
+      {% if is_paginated %}
+        <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li class="page-item"><a href="{% if page_obj.previous_page_number != "1" %}?q={{ query }}&amp;page={{ page_obj.previous_page_number }}{% endif %}" class="page-link">&laquo;</a></li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+        {% endif %}
+
+        {% for i in paginator.page_range %}
+          {% if page_obj.number == i %}
+            <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+          {% else %}
+            <li class="page-item"><a href="{% if i != 1 %}?q={{ query }}&amp;page={{ i }}{% else %}{{ request.path }}?q={{ query }}{% endif %}" class="page-link">{{ i }}</a></li>
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <li class="page-item"><a href="?q={{ query }}&amp;page={{ page_obj.next_page_number }}" class="page-link">&raquo;</a></li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+        {% endif %}
+        </ul>
+      {% endif %}
+    {% else %}
+      {# Show some example queries to run, maybe query syntax, something else? #}
+    {% endif %}
+  </section>
+{% endblock content %}

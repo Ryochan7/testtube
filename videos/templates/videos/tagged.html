@@ -1,0 +1,85 @@
+{% extends "videos/base.html" %}
+
+{% load static %}
+{% load bootstrap4 %}
+{% load thumbnail %}
+{% load humanize %}
+
+{% block page_title %}Tag: {{ tag.name }}{% endblock %}
+
+{% block extra_css %}
+
+    <style>
+      .media-item div a.title-link
+      {
+        color: #000000;
+      }
+
+      .media-item > div, .media-item div a {
+        color: #555555;
+      }
+
+      .media-item .item-header img {
+        width: 100%;
+        height: auto;
+      }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+      <div class="col">
+        <h3>Tagged Under: {{ tag.name }}</h3>
+      </div>
+    </div>
+
+    <div class="row">
+    {% for media in media_list %}
+      <div class="col-md-4 mb-3 media-item">
+        {% thumbnail media.thumbnail "350x200" as im %}
+          <div class="item-header" style="position: relative;">
+            <a href="{{ media.get_absolute_url }}">
+              <img src="{{ im.url }}" alt="{{ media.title }}" width=350 height=200 class="d-block mb-2">
+            </a>
+            <div style="position: absolute; bottom: 4px; right: 8px; background-color: rgba(0, 0, 0, 0.75); color: #FFFFFF;" class="pl-1 pr-1">{{ media.media_format_duration }}</div>
+          </div>
+        {% endthumbnail %}
+        <div class="title"><a href="{{ media.get_absolute_url }}" class="title-link">{{ media.title }}</a></div>
+        <div class="channel-name">{{ media.uploader.username }}</div>
+        <div class="media-extra">
+          <span class="view-count">{{ media.view_count }} View{{ media.view_count|pluralize }}</span> • <span class="media-date"><time pubdate datetime="{{ media.publish_date|date:'c' }}" title="{{ media.publish_date|date:'N j, Y, P O' }}">{{ media.publish_date|naturaltime }}</time></span>
+        </div>
+        {% if user.is_staff %}
+          <div class="media-admin-info">
+            <a href="{% url 'videos:category' media.category.slug %}" title="{{ media.category.title }}">{{ media.category.title }}</a> | {{ media.get_rating_display }}
+          </div>
+        {% endif %}
+     </div>
+  {% endfor %}
+    </div>
+
+  {% if is_paginated %}
+    <ul class="pagination">
+    {% if page_obj.has_previous %}
+      <li class="page-item"><a href="{% if page_obj.previous_page_number != 1 %}?page={{ page_obj.previous_page_number }}{% else %}{{ request.path }}{% endif %}" class="page-link">&laquo;</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+    {% endif %}
+
+    {% for i in paginator.page_range %}
+      {% if page_obj.number == i %}
+        <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+      {% else %}
+        <li class="page-item"><a href="{% if i != 1 %}?page={{ i }}{% else %}{{ request.path }}{% endif %}" class="page-link">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+      <li class="page-item"><a href="?page={{ page_obj.next_page_number }}" class="page-link">&raquo;</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+    {% endif %}
+    </ul>
+  {% endif %}
+{% endblock content %}
+

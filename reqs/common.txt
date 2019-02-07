@@ -1,0 +1,16 @@
+Django
+Pillow
+django-resumable
+django-static-jquery
+django-bootstrap4
+celery
+redis
+sorl-thumbnail
+django-debug-toolbar
+django-compressor
+django-extensions
+django-taggit
+python-dateutil
+django-haystack
+whoosh
+

@@ -1,0 +1,10 @@
+<label for="id_{{ filename_input_name }}">
+    {% if filename %}{{ filename }}{% else %}select a file to upload.{% endif %}
+</label>
+{#<label for="{{ attrs.id }}">Change:</label>#}
+<input id="id_{{ filename_input_name }}" type="hidden" name="{{ filename_input_name }}" value="{{ filename_input_value }}" />
+<input type="file" name="{{ file_input_name }}" style="opacity: 0; width: 100px; z-index: -10; position: absolute; line-height: 2.0em;" {% for name, value in attrs.items %} {{ name }}{% if value != True %}="{{ value }}"{% endif %}{% endfor %} required />
+<label id="upload-label" for="{{ attrs.id }}" class="btn btn-primary">
+  Choose File
+</label>
+

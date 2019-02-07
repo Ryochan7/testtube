@@ -1,0 +1,39 @@
+{% extends "videos/base.html" %}
+
+{% load static %}
+{% load bootstrap4 %}
+
+{% block page_title %}Hello, world!{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <section class="col-12">
+      <h1>Hello, world!</h1>
+      {#<i class="fas fa-trash"></i>#}
+      <form method="post" action="{% url 'videos:submitupload' %}" enctype="multipart/form-data">
+        <fieldset>
+          {% csrf_token %}
+          {#{{ form.as_p }}#}
+          {% bootstrap_form form %}
+          {% buttons %}
+            <button type="submit" class="btn btn-primary">Upload</button>
+          {% endbuttons %}
+          {% comment %}<input type="file" name="myfile">{% endcomment %}
+          {#<button type="submit">Upload</button>#}
+        </fieldset>
+      </form>
+    </section>
+  </div>
+{% endblock content %}
+
+{% block extra_js %}
+    <script type="text/javascript" src="{% static 'videos/js/resumable.js' %}"></script>
+    <script type="text/javascript" src="{% static 'resumable/js/django-resumable.js' %}"></script>
+    {#<script type="text/javascript" src="{% static 'resumable/js/init.js' %}"></script>#}
+    <script type="text/javascript" src="{% static 'videos/js/dresume-init.js' %}"></script>
+
+    <script type="text/javascript">
+      
+    </script>
+{% endblock extra_js %}
+

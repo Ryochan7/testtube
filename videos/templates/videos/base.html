@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en" prefix="og: http://ogp.me/ns#">
+{% spaceless %}
+{% load static bootstrap4 custom_extras %}
+{% url 'videos:medialist' as home_url %}
+{% url 'videos:upload' as upload_url %}
+{% url 'videos:topmedia' as topmedia_url %}
+{% url 'videos:search' as search_url %}
+{% url 'videos:recentlist' as recent_url %}
+{% url 'videos:featured' as featured_url %}
+
+{% endspaceless %}
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta property="og:site_name" content="Wasteland">
+    <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+    {% block og_meta %}
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Home">
+    <meta property="og:image" content="{% get_media_prefix %}main_img.jpg">
+    <meta property="og:description" content="Description">
+    {% endblock og_meta %}
+    {% block extra_meta %}{% endblock %}
+
+    <title>{% block page_title %}List{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    {% bootstrap_css %}
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+
+    <style media="(min-width: 768px)">
+      .cat-dropdown {
+        padding: 8px 10px;
+        width: 18rem;
+      }
+    </style>
+
+    <style media="(max-width: 767px)">
+      .cat-dropdown .row a {
+        padding: inherit;
+      }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+    {% block extra_head_js %}{% endblock %}
+    {% block extra_head %}{% endblock %}
+  </head>
+
+ <body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <a class="navbar-brand" href="{{ home_url }}">Wasteland</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+
+        <a class="nav-item nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a>
+
+        <a class="nav-item nav-link{% if request.path == recent_url %} active{% endif %}" href="{{ recent_url }}">Recent</a>
+        <a class="nav-item nav-link{% if request.path == featured_url %} active{% endif %}" href="{{ featured_url }}">Featured</a>
+        <div class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle{% if in_pop %} active{% endif %}" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Popular</a>
+          <div class="dropdown-menu">
+              <a href="{% url 'videos:popular' 'day' %}" class="col d-block">24 hours</a>
+              <a href="{% url 'videos:popular' 'week' %}" class="col d-block">1 week</a>
+              <a href="{% url 'videos:popular' 'month' %}" class="col d-block">1 month</a>
+          </div>
+        </div>
+
+        <div class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle{% if is_cat %} active{% endif %}" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Categories</a>
+          <div class="cat-dropdown dropdown-menu">
+            <div class="row">
+              <div class="col-md-6"><a href="{% url 'videos:category' 'comedy' %}">Comedy</a></div>
+              <div class="col-md-6"><a href="{% url 'videos:category' 'gaming' %}">Gaming</a></div>
+              <div class="col-md-6"><a href="{% url 'videos:category' 'music' %}">Music</a></div>
+              <div class="col-md-6"><a href="{% url 'videos:category' 'news-politics' %}">News & Politics</a></div>
+              <div class="col-md-6"><a href="{% url 'videos:category' 'other' %}">Other</a></div>
+              <div class="col-md-6"><a href="{% url 'videos:category' 'people-blogs' %}">People & Blogs</a></div>
+              <div class="col-md-6"><a href="{% url 'videos:category' 'religion' %}">Religion</a></div>
+            </div>
+          </div>
+        </div>
+
+        <a class="nav-item nav-link{% if request.path == topmedia_url %} active{% endif %}" href="{{ topmedia_url }}">Top Uploads</a>
+        <a class="nav-item nav-link{% if request.path == search_url %} active{% endif %}" href="{{ search_url }}">Search</a>
+
+        
+
+        {#<a class="nav-item nav-link" href="#">Features</a>#}
+        {#<a class="nav-item nav-link" href="#">Pricing</a>#}
+        {#<a class="nav-item nav-link disabled" href="#">Disabled</a>#}
+      </div>
+    </div>
+
+    {% if user.is_authenticated %}
+      <div class="collapse navbar-collapse">
+        <div class="navbar-nav ml-5">
+          <div class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ request.user.username|default:"User" }}</a>
+            <div class="dropdown-menu">
+              <a href="{{ upload_url }}" class="col d-block">Upload</a>
+              <a href="{% url 'videos:subscribemedia' %}" class="col d-block">Sub Videos{% if request.user.has_unseen_sub_vids %} ({{ request.user.unseen_sub_upload_count }}){% endif %}</a>
+              <a href="{% url 'videos:subscriptions' %}" class="col d-block">Manage Subscriptions</a> 
+              {#<a href="{% url 'videos:playlists' %}" class="col d-block">Playlists</a>#}
+              <a href="{% url 'videos:playhistory' %}" class="col d-block">History</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </nav>
+
+   <div class="container">
+     {% block content %}{% endblock %}
+   </div>
+
+   {% block extra_footer %}{% endblock %}
+
+   <script type="text/javascript" src="{% static 'static_jquery/js/jquery.min.js' %}"></script>
+    {% bootstrap_javascript %}
+   {% block extra_js %}{% endblock %}
+ </body>
+</html>
+

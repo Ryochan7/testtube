@@ -102,3 +102,12 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+*.*~
+*.swp
+chunks_dir/
+media/cache/
+media/media_uploads/
+media/profile_pics/
+whoosh_index/
+

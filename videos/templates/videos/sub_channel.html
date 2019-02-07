@@ -1,0 +1,95 @@
+{% extends "videos/base.html" %}
+
+{% load static %}
+{% load bootstrap4 %}
+{% load thumbnail %}
+
+{% block page_title %}Subbed Channels{% endblock %}
+
+{% block extra_css %}
+
+    <style>
+      .media-item div a.title-link
+      {
+        color: #000000;
+      }
+
+      .media-item > div, .media-item div a {
+        color: #555555;
+      }
+
+      .media-item .item-header img {
+        width: 100%;
+        height: auto;
+      }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="row mb-4">
+      <div class="col">
+        <h3>Subbed Channels</h3>
+      </div>
+    </div>
+
+    {% for sub in object_list %}
+      <div class="row channel-item">
+        <div class="col-md-2">
+        {% thumbnail sub.subbed.profile_image "100x100" as im %}
+          <div class="channel-image"><a href=""><img src="{{ im.url }}" alt="{{ sub.subbed.username }} profile image" class="border-radius-4"></a></div>
+        </div>
+        {% endthumbnail %}
+        <div class="col-md-3">
+          <div class="channel-name"><a href="{{ sub.subbed.get_absolute_url }}">{{ sub.subbed.username }}</a></div>
+          <div class="channel-extra">
+            <span class="channel-subs">{{ sub.subbed.sub_count }} subscriber{{ sub.subbed.sub_count|pluralize }}</span> • <span class="channel-videos">{{ sub.subbed.video_count }} video{{ sub.subbed.video_count|pluralize }}</span>
+          </div>
+        </div>
+        <div class="col-md-7">
+          <button class="btn btn-primary subscribe" data-channel-id="{{ sub.subbed.id }}" data-toggle-sub="{% url 'videos:togglesub' sub.subbed.id %}" data-num-subs="{{ sub.subbed.sub_count }}">Subscribe ({{ sub.subbed.sub_count }})</button>
+        </div>
+        
+      </div>
+    {% endfor %}
+
+  {% if is_paginated %}
+    <ul class="pagination">
+    {% if page_obj.has_previous %}
+      <li class="page-item"><a href="{% if page_obj.previous_page_number != 1 %}?page={{ page_obj.previous_page_number }}{% else %}{{ request.path }}{% endif %}" class="page-link">&laquo;</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+    {% endif %}
+
+    {% for i in paginator.page_range %}
+      {% if page_obj.number == i %}
+        <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+      {% else %}
+        <li class="page-item"><a href="{% if i != 1 %}?page={{ i }}{% else %}{{ request.path }}{% endif %}" class="page-link">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+      <li class="page-item"><a href="?page={{ page_obj.next_page_number }}" class="page-link">&raquo;</a></li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+    {% endif %}
+    </ul>
+  {% endif %}
+{% endblock content %}
+
+{% block extra_js %}
+  <script type="text/javascript">
+    $(".channel-item .subscribe").click(function(e) {
+      e.preventDefault();
+      var toggle_url = $(this).attr("data-toggle-sub");
+      var sub_el = this;
+      post_data = {
+        "csrfmiddlewaretoken": "{{ csrf_token }}",
+      };
+
+      $.post(toggle_url, post_data, function(data) {
+        $(sub_el).parents(".channel-item").remove();
+      });
+    });
+  </script>
+{% endblock extra_js %}
