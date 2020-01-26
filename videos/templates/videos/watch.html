@@ -113,7 +113,7 @@
           <h1 class="title">{{ media.title }}</h1>
           {#<i class="fas fa-trash"></i>#}
           {% if media.is_public %}
-            <video id="player" poster="{{ media.thumbnail.url }}">
+            <video id="player" poster="{{ media.thumbnail.url }}" preload="none">
               <source src="{{ media.media_file.url }}" type="video/mp4">
               {#<source src="{% get_media_prefix %}puyDDle.mp4" type="video/mp4">#}
             </video>
@@ -272,7 +272,7 @@
         captions: {
           active: true,
         },
-        autoplay: "auto",
+        autoplay: true,
        };
 
        player = new Plyr("#player", config);
