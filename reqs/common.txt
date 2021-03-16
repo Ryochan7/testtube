@@ -1,6 +1,6 @@
 Django==2.2.9
 Pillow
-django-resumable
+git+git://github.com/Ryochan7/django-resumable.git@ryochan#egg=django-resumable
 django-static-jquery
 django-bootstrap4
 celery
