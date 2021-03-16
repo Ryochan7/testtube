@@ -1,4 +1,4 @@
-Django==2.2.9
+Django==2.2.19
 Pillow
 git+git://github.com/Ryochan7/django-resumable.git@ryochan#egg=django-resumable
 django-static-jquery
