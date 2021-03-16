@@ -137,7 +137,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 MEDIA_URL = '/media/'
-MEDIA_URL = "http://127.0.0.1/media/"
+#MEDIA_URL = "http://127.0.0.1/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 TMP_UPLOAD_DIR_PREFIX = "tempuploads"
 TMP_UPLOAD_ROOT = os.path.join(BASE_DIR, TMP_UPLOAD_DIR_PREFIX)
@@ -169,8 +169,4 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 
-if not DEBUG and "debug_toolbar" in INSTALLED_APPS:
-  INSTALLED_APPS.remove("debug_toolbar")
-#elif DEBUG and "debug_toolbar" in INSTALLED_APPS:
-#  MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
 
