@@ -25,7 +25,7 @@ SECRET_KEY = '55po-=0u@dvkb7b)(3(1x6f$%#5ws(ktuj0iss@k+1sku86d27'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "ryochan7.xyz"]
+ALLOWED_HOSTS = ["127.0.0.1"]
 AUTH_USER_MODEL = "testtube_custom.SiteUser"
 
 # Application definition
