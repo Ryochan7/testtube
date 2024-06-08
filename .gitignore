@@ -110,6 +110,7 @@ media/cache/*
 !media/cache/.directory
 media/media_uploads/
 media/profile_pics/
+static/*
+!static/.directory
 whoosh_index/
 tempuploads/
-
