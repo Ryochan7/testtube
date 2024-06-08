@@ -1,7 +1,7 @@
 {% extends "videos/base.html" %}
 
 {% load static %}
-{% load bootstrap4 %}
+{% load django_bootstrap5 %}
 
 {% block page_title %}Hello, world!{% endblock %}
 
@@ -15,9 +15,9 @@
           {% csrf_token %}
           {#{{ form.as_p }}#}
           {% bootstrap_form form %}
-          {% buttons %}
+          {#{% buttons %}#}
             <button type="submit" class="btn btn-primary">Upload</button>
-          {% endbuttons %}
+          {#{% endbuttons %}#}
           {% comment %}<input type="file" name="myfile">{% endcomment %}
           {#<button type="submit">Upload</button>#}
         </fieldset>

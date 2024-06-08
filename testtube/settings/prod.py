@@ -1,6 +1,7 @@
 from common import *
 
 DEBUG = False
+ENABLE_TOOLBAR = False
 
 DATABASES = {
     'default': {

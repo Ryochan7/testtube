@@ -6,19 +6,17 @@ import re
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
-from django.core.files.storage import FileSystemStorage
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django.utils.safestring import mark_safe
+
 from sorl.thumbnail import ImageField
 from taggit.managers import TaggableManager
-#from reacts.models import Reaction
-
 from .storage import FileMoveSystemStorage
 
-re_timestamptext = re.compile(r"(\d{2}:)?(\d{1,2})?:(\d{2})")
-
 # Create your models here.
+
+re_timestamptext = re.compile(r"(\d{2}:)?(\d{1,2})?:(\d{2})")
 
 def thumbnail_user_upload_to(instance, filename):
   current_date = datetime.datetime.now()
@@ -47,7 +45,7 @@ class MediaCategory(models.Model):
   def __str__(self):
     return self.title
 
-  class Meta(object):
+  class Meta:
     verbose_name_plural = "Media Categories"
 
   def get_absolute_url(self):
@@ -97,7 +95,8 @@ class Media(models.Model):
   title = models.CharField(max_length=100)
   slug = models.SlugField()
   uuid_code = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
-  media_file = models.FileField(upload_to=tmp_media_upload_to, max_length=200, storage=FileMoveSystemStorage(location=settings.TMP_UPLOAD_ROOT))
+  media_file = models.FileField(upload_to=tmp_media_upload_to, max_length=200,
+    storage=FileMoveSystemStorage(location=settings.TMP_UPLOAD_ROOT))
   description = models.TextField(blank=True)
   uploader = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, default=None)
   view_count = models.IntegerField(default=0, db_index=True)
@@ -193,6 +192,7 @@ self.visibility == self.__class__.PUBLIC)
     return mark_safe(temp)
 
 
+
 class MediaView(models.Model):
   visitor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
   logged_ip = models.GenericIPAddressField()
@@ -200,7 +200,7 @@ class MediaView(models.Model):
   created_at = models.DateTimeField(auto_now=True, db_index=True)
   updated_at = models.DateTimeField(auto_now=True)
 
-  class Meta(object):
+  class Meta:
     verbose_name = "Media View"
     verbose_name_plural = "Media Views"
     """indexes = [
@@ -216,7 +216,7 @@ class MediaHistoryItem(models.Model):
   created_at = models.DateTimeField(auto_now=True)
   updated_at = models.DateTimeField(auto_now=True, db_index=True)
 
-  class Meta(object):
+  class Meta:
     verbose_name = "Media History Item"
     verbose_name_plural = "Media History Items"
 
@@ -239,7 +239,7 @@ class MediaPlaylist(models.Model):
   created_at = models.DateTimeField(auto_now=True)
   updated_at = models.DateTimeField(auto_now=True)
 
-  class Meta(object):
+  class Meta:
     verbose_name = "Media Playlist"
     verbose_name_plural = "Media Playlists"
 
@@ -260,11 +260,11 @@ class MediaPlaylist(models.Model):
 class MediaSubscription(models.Model):
   subscriber = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="subscriber")
   subbed = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="subbed")
-  origin_media = models.ForeignKey(Media, on_delete=models.CASCADE, null=True)
+  origin_media = models.ForeignKey(Media, on_delete=models.CASCADE, blank=True, null=True)
   created_at = models.DateTimeField(auto_now=True)
   updated_at = models.DateTimeField(auto_now=True)
 
-  class Meta(object):
+  class Meta:
     verbose_name = "Media Subscription"
     verbose_name_plural = "Media Subscriptions"
 
@@ -275,7 +275,7 @@ class MediaSubscription(models.Model):
 class MediaFeaturedItem(models.Model):
   media = models.ForeignKey(Media, on_delete=models.CASCADE)
 
-  class Meta(object):
+  class Meta:
     verbose_name = "Featured Media"
     verbose_name_plural = "Featured Media Items"
     ordering = ["-id"]
@@ -301,7 +301,7 @@ class MediaReaction(models.Model):
   def __str__(self):
     return str(self.id)
 
-  class Meta(object):
+  class Meta:
     verbose_name = "Reaction"
     verbose_name_plural = "Reactions"
     unique_together = ("sender", "media", "reaction")

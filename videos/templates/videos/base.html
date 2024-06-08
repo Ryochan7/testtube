@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en" prefix="og: http://ogp.me/ns#">
 {% spaceless %}
-{% load static bootstrap4 custom_extras %}
+{% load static django_bootstrap5 custom_extras %}
 {% url 'videos:medialist' as home_url %}
 {% url 'videos:upload' as upload_url %}
 {% url 'videos:topmedia' as topmedia_url %}
@@ -49,68 +49,75 @@
   </head>
 
  <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 px-4">
     <a class="navbar-brand" href="{{ home_url }}">Testtube</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-
-        <a class="nav-item nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a>
-
-        <a class="nav-item nav-link{% if request.path == recent_url %} active{% endif %}" href="{{ recent_url }}">Recent</a>
-        <a class="nav-item nav-link{% if request.path == featured_url %} active{% endif %}" href="{{ featured_url }}">Featured</a>
-        <div class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle{% if in_pop %} active{% endif %}" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Popular</a>
-          <div class="dropdown-menu">
-              <a href="{% url 'videos:popular' 'day' %}" class="col d-block">24 hours</a>
-              <a href="{% url 'videos:popular' 'week' %}" class="col d-block">1 week</a>
-              <a href="{% url 'videos:popular' 'month' %}" class="col d-block">1 month</a>
-          </div>
-        </div>
-
-        <div class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle{% if is_cat %} active{% endif %}" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Categories</a>
-          <div class="cat-dropdown dropdown-menu">
-            <div class="row">
-              <div class="col-md-6"><a href="{% url 'videos:category' 'comedy' %}">Comedy</a></div>
-              <div class="col-md-6"><a href="{% url 'videos:category' 'gaming' %}">Gaming</a></div>
-              <div class="col-md-6"><a href="{% url 'videos:category' 'music' %}">Music</a></div>
-              <div class="col-md-6"><a href="{% url 'videos:category' 'news-politics' %}">News & Politics</a></div>
-              <div class="col-md-6"><a href="{% url 'videos:category' 'other' %}">Other</a></div>
-              <div class="col-md-6"><a href="{% url 'videos:category' 'people-blogs' %}">People & Blogs</a></div>
-              <div class="col-md-6"><a href="{% url 'videos:category' 'religion' %}">Religion</a></div>
-            </div>
-          </div>
-        </div>
-
-        <a class="nav-item nav-link{% if request.path == topmedia_url %} active{% endif %}" href="{{ topmedia_url }}">Top Uploads</a>
-        <a class="nav-item nav-link{% if request.path == search_url %} active{% endif %}" href="{{ search_url }}">Search</a>
-
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link{% if request.path == home_url %} active{% endif %}" href="{{ home_url }}">Home</a>
+        </li>
         
+        <li class="nav-item">
+          <a class="nav-link{% if request.path == recent_url %} active{% endif %}" href="{{ recent_url }}">Recent</a>
+        </li>
+        
+        <li class="nav-item">
+          <a class="nav-link{% if request.path == featured_url %} active{% endif %}" href="{{ featured_url }}">Featured</a>
+        </li>
 
-        {#<a class="nav-item nav-link" href="#">Features</a>#}
-        {#<a class="nav-item nav-link" href="#">Pricing</a>#}
-        {#<a class="nav-item nav-link disabled" href="#">Disabled</a>#}
-      </div>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle{% if in_pop %} active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Popular</a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a href="{% url 'videos:popular' 'day' %}" class="dropdown-item">24 hours</a></li>
+            <li><a href="{% url 'videos:popular' 'week' %}" class="dropdown-item">1 week</a></li>
+            <li><a href="{% url 'videos:popular' 'month' %}" class="dropdown-item">1 month</a></li>
+            </li>
+          </ul>
+        </li>
+        
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle{% if is_cat %} active{% endif %}" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Categories</a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a href="{% url 'videos:category' 'comedy' %}" class="dropdown-item">Comedy</a></li>
+            <li><a href="{% url 'videos:category' 'gaming' %}" class="dropdown-item">Gaming</a></li>
+            <li><a href="{% url 'videos:category' 'music' %}" class="dropdown-item">Music</a></li>
+            <li><a href="{% url 'videos:category' 'news-politics' %}" class="dropdown-item">News &amp; Politics</a></li>
+            <li><a href="{% url 'videos:category' 'other' %}" class="dropdown-item">Other</a></li>
+            <li><a href="{% url 'videos:category' 'people-blogs' %}" class="dropdown-item">People &amp; Blogs</a></li>
+            <li><a href="{% url 'videos:category' 'religion' %}" class="dropdown-item">Religion</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item">
+          <a class="nav-link{% if request.path == topmedia_url %} active{% endif %}" href="{{ topmedia_url }}">Top Uploads</a>
+        </li>
+        
+        <li class="nav-item">
+          <a class="nav-link{% if request.path == search_url %} active{% endif %}" href="{{ search_url }}">Search</a>
+        </li>
+      </ul>
+
     </div>
 
     {% if user.is_authenticated %}
       <div class="collapse navbar-collapse">
-        <div class="navbar-nav ml-5">
-          <div class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ request.user.username|default:"User" }}</a>
-            <div class="dropdown-menu">
-              <a href="{{ upload_url }}" class="col d-block">Upload</a>
-              <a href="{% url 'videos:subscribemedia' %}" class="col d-block">Sub Videos{% if request.user.has_unseen_sub_vids %} ({{ request.user.unseen_sub_upload_count }}){% endif %}</a>
-              <a href="{% url 'videos:subscriptions' %}" class="col d-block">Manage Subscriptions</a> 
-              {#<a href="{% url 'videos:playlists' %}" class="col d-block">Playlists</a>#}
-              <a href="{% url 'videos:playhistory' %}" class="col d-block">History</a>
-            </div>
-          </div>
-        </div>
+         
+        <ul class="navbar-nav ml-5">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ request.user.username|default:"User" }}</a>
+            <ul class="dropdown-menu">
+              <li><a href="{{ upload_url }}" class="dropdown-item">Upload</a></li>
+              <li><a href="{% url 'videos:subscribemedia' %}" class="dropdown-item">Sub Videos{% if request.user.has_unseen_sub_vids %} ({{ request.user.unseen_sub_upload_count }}){% endif %}</a></li>
+              <li><a href="{% url 'videos:subscriptions' %}" class="dropdown-item">Manage Subscriptions</a></li>
+              {#<li><a href="{% url 'videos:playlists' %}" class="dropdown-item">Playlists</a></li>#}
+              <li><a href="{% url 'videos:playhistory' %}" class="dropdown-item">History</a></li>
+            </ul>
+          </li>
+        </ul>
       </div>
     {% endif %}
   </nav>
@@ -121,7 +128,7 @@
 
    {% block extra_footer %}{% endblock %}
 
-   <script type="text/javascript" src="{% static 'static_jquery/js/jquery.min.js' %}"></script>
+   <script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
     {% bootstrap_javascript %}
    {% block extra_js %}{% endblock %}
  </body>

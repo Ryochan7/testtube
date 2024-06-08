@@ -1,7 +1,7 @@
 {% extends "videos/base.html" %}
 
 {% load static %}
-{% load bootstrap4 %}
+{% load django_bootstrap5 %}
 {% load thumbnail %}
 {% load humanize %}
 
@@ -17,9 +17,9 @@
       <fieldset>
         {# {{ form.as_p }} #}
         {% bootstrap_form form %}
-        {% buttons %}
+        {#{% buttons %}#}
           <button type="submit" class="btn btn-primary">Search</button>
-        {% endbuttons %}
+        {#{% endbuttons %}#}
       </fieldset>
     </form>
 

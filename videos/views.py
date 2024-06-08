@@ -205,7 +205,8 @@ class MediaTaggedList(ListView):
     tag = get_object_or_404(Tag, slug=self.kwargs.get("slug"))
     context = super().get_context_data(**kwargs)
     context["tag"] = tag
-    return context 
+    return context
+
 
 
 class TestResumableView(ResumableUploadView):
@@ -402,7 +403,9 @@ class MediaReactionChange(LoginRequiredMixin, View):
     else:
       return HttpResponseBadRequest()
 
-    if request.is_ajax():
+    #if request.is_ajax():
+    is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+    if is_ajax:
       react_count = MediaReaction.objects.filter(media=media).count()
       likes = MediaReaction.objects.filter(media=media, reaction=MediaReaction.LIKE).count()
       like_percent = int((likes / react_count) * 100.0) if react_count > 0 else 0
@@ -433,7 +436,9 @@ class ToggleSubscription(LoginRequiredMixin, View):
     if not created:
       sub.delete()
 
-    if request.is_ajax():
+    is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+    #if request.is_ajax():
+    if is_ajax:
       data = {
       }
 

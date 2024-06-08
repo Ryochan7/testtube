@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from django import forms
 from django.forms import ModelForm
 from django.forms.widgets import ClearableFileInput
@@ -14,7 +15,7 @@ class MediaThumbInput(ClearableFileInput):
   template_name = "videos/forms/widgets/clearable_file_input.html"
 
 class MediaAdminForm(ModelForm):
-  class Meta(object):
+  class Meta:
     model = Media
     fields = "__all__"
     widgets = {
