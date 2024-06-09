@@ -41,7 +41,10 @@ python manage.py runserver
 ```
 
 The program **celery** needs to be running in a separate terminal
-since it will handle launching ffmpeg to encode video files. Example:
+since it will handle launching ffmpeg to encode video files.
+Before launching celery, make sure to activate the testtube-env virtual
+environment from within that terminal. Also, it has to be launched
+from the main project folder. Example:
 
 ```
 celery -A testtube worker --loglevel=debug --concurrency=1
